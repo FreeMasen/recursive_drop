@@ -3,33 +3,19 @@ struct Start {
     start: Nested,
 }
 
-struct Start3 {
-    start: Nested3,
-}
+
+
+
 enum Nested {
     With(Box<Value>),
     Without
 }
 
-enum Nested3 {
-    With(Box<Value3>),
-    Other(Box<Other>),
-    Without
-}
+
 
 struct Value {
     data: usize,
     next: Nested,
-}
-
-struct Value3 {
-    data: usize,
-    next: Nested3,
-}
-
-struct Other {
-    data: Value3,
-    n: usize,
 }
 
 impl Start {
@@ -40,13 +26,7 @@ impl Start {
     }
 }
 
-impl Start3 {
-    fn nested(n: usize) -> Self {
-        Self {
-            start: Nested3::nested(n),
-        }
-    }
-}
+
 
 impl Nested {
     fn nested(n: usize) -> Self {
@@ -60,6 +40,34 @@ impl Nested {
         }
         inner
     }
+}
+
+#[test]
+fn find_deepest2() {
+    for i in 0..std::usize::MAX {
+        dbg!(i);
+        {
+            let _thing = Start::nested(i);
+        }
+    }
+}
+
+struct Start3 {
+    start: Nested3,
+}
+
+impl Start3 {
+    fn nested(n: usize) -> Self {
+        Self {
+            start: Nested3::nested(n),
+        }
+    }
+}
+
+enum Nested3 {
+    With(Box<Value3>),
+    Other(Box<Other>),
+    Without
 }
 
 impl Nested3 {
@@ -84,28 +92,22 @@ impl Nested3 {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn find_deepest2() {
-        // mbp i9 6 core 16gb ram
-        // 18702 max
-        for i in 0..std::usize::MAX {
-            dbg!(i);
-            {
-                let _thing = Start::nested(i);
-            }
-        }
-    }
-    #[test]
-    fn find_deepest3() {
-        //16364
-        for i in 0..std::usize::MAX {
-            dbg!(i);
-            {
-                let _thing = Start3::nested(i);
-            }
+struct Value3 {
+    data: usize,
+    next: Nested3,
+}
+
+struct Other {
+    data: Value3,
+    n: usize,
+}
+
+#[test]
+fn find_deepest3() {
+    for i in 0..std::usize::MAX {
+        dbg!(i);
+        {
+            let _thing = Start3::nested(i);
         }
     }
 }
